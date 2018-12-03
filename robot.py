@@ -2,6 +2,7 @@
 
 import numpy as np 
 import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 from numpy.random import uniform
 import pygame
 import math
@@ -94,6 +95,10 @@ def main():
 
 	xs = []
 	#robot_pos = np.array(myrobot.pos)
+	robot_x = []
+	robot_y = []
+	mu_x = []
+	mu_y = []
 
 	while(flag):
 		if (draw):
@@ -140,10 +145,16 @@ def main():
 		mu, var = PF.estimate(particles, weights)
 		xs.append(mu)
 
+		mu_x.append(mu[0])
+		mu_y.append(mu[1])
+		robot_x.append(robot_pos[0])
+		robot_y.append(robot_pos[1])
+
 		print("actual", robot_pos)
 		print("predicted", mu)
-		p1 = plt.scatter(robot_pos[0], robot_pos[1], marker='+', color='k', s=180, lw=3)
-		p2 = plt.scatter(mu[0], mu[1], marker='s', color='r')
+
+		# plt.scatter(robot_pos[0], robot_pos[1], marker='+', color='k', s=180, lw=3)
+		# plt.scatter(mu[0], mu[1], marker='s', color='r')
 
 
 		for event in pygame.event.get():
@@ -152,8 +163,16 @@ def main():
 					flag = False
 				if (event.key == ord('s')):
 					speed = ~speed
-	#plt.xlim(lims)
-	#plt.ylim(lims)
-	#plt.show()
+	robot_x = np.asarray(robot_x)
+	robot_y = np.asarray(robot_y)
+	mu_x = np.asarray(mu_x)
+	mu_y = np.asarray(mu_y)
+
+	print()
+
+	plt.figure()
+	plt.plot(robot_x, robot_y, color='k')
+	plt.plot(mu_x, mu_y, color='r')
+	plt.show()
 		
 main()

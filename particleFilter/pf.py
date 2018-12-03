@@ -1,4 +1,6 @@
 ## Particle filter implementation for robot localization.
+# code adapted from https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/12-Particle-Filters.ipynb
+##     RLabbe - Kalman and Bayesian Filters in Python - GitHub
 
 import numpy as np 
 from numpy.random import uniform
@@ -31,14 +33,19 @@ def predict(particles, u, std, dt=1.):
     with noise Q (std heading change, std velocity)`"""
 
     N = len(particles)
-    # update heading
-    particles[:, 2] += u[0] + (randn(N) * std[0])
-    particles[:, 2] %= 2 * np.pi
+    # # update heading
+    # particles[:, 2] += u[0] + (randn(N) * std[0])
+    # particles[:, 2] %= 2 * np.pi
 
-    # move in the (noisy) commanded direction
-    dist = (u[1] * dt) + (randn(N) * std[1])
-    particles[:, 0] += np.cos(particles[:, 2]) * dist
-    particles[:, 1] += np.sin(particles[:, 2]) * dist
+    # # move in the (noisy) commanded direction
+    # dist = (u[1] * dt) + (randn(N) * std[1])
+    # particles[:, 0] += np.cos(particles[:, 2]) * dist
+    # particles[:, 1] += np.sin(particles[:, 2]) * dist
+    
+    particles[:, 0] += u[0] + (randn(N)*std[1])
+    particles[:, 1] += u[1] + (randn(N)*std[1])
+    particles[:, 2] += u[2] + (randn(N) * std[0])
+    particles[:, 2] %= 2 * np.pi
 
 
 def update(particles, weights, z, R, landmarks):
@@ -56,6 +63,9 @@ def estimate(particles, weights):
     mean = np.average(pos, weights=weights, axis=0)
     var  = np.average((pos - mean)**2, weights=weights, axis=0)
     return mean, var
+
+def neff(weights):
+    return 1. / np.sum(np.square(weights))
 
 def resample_from_index(particles, weights, indexes):
     particles[:] = particles[indexes]

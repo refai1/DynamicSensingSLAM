@@ -27,29 +27,10 @@ class Robot:
 		self.pos = pos
 		self.theta = theta
 
-
+	# This function takes in the robot's action (different wheel velocities)
+	# and allows user input to change the velocity. moves the robot and updates the state.
+	# it returns the action at the end of the call to be used on the next call.
 	def updateState(self, action):
-		# speed = action[0]
-		# turn = action[1]
-		
-		# keys = pygame.key.get_pressed()
-		# if keys[pygame.K_LEFT]:
-		# 	turn = turn - 1
-		# 	if (turn < -1):
-		# 		turn = -1
-		# if keys[pygame.K_RIGHT]:
-		# 	turn = turn + 1
-		# 	if (turn > 1):
-		# 		turn = 1
-
-		# newtheta = self.theta + turn*math.radians(1)
-		# newx = self.pos[0] - speed*DT*math.sin(self.theta)
-		# newy = self.pos[1] + speed*DT*math.cos(self.theta)
-
-		# self.pos = (newx,newy)
-		# self.theta = newtheta
-		# return (speed,0)
-
 		l_spd = action[0]
 		r_spd = action[1]
 
@@ -87,11 +68,10 @@ class Robot:
 
 def main():
 
-
+	# set up game/animation screen
 	pygame.init()
-
-	lims = 600
 	screen = pygame.display.set_mode([600, 600],0)
+	screen.fill(BLACK)
 
 
 	# configuration space of size 600x600. All zeros, no landmarks
@@ -100,34 +80,29 @@ def main():
 	# declare robot at initial position with initial heading.
 	myrobot = Robot((50,50), math.radians(180))
 
-	#movingsprites = pygame.sprite.Group()
-	#movingsprites.add(myrobot)
-
-	draw = True
-	flag = True
-	# the user can press s to toggle speed between 0 and 1
-	# the user can press -> or <- to toggle turn clockwise or counter respectively.
+	# action is the velocity of the left and right wheel respectively. 
 	action = (0,0)
 
-	screen.fill(BLACK)
+	
 
-
+	# define a single landmark in the middle. N=5000 particles
 	landmarks = np.array([[300,300]])
 	NL = len(landmarks)
 	N = 5000
-	#plt.figure()
 
-	# initially we have a good idea of where the robot is
+	# initially we have a good idea of where the robot is. weights are uniform in that space
 	particles = PF.create_gaussian_particles(mean=[myrobot.pos[0],myrobot.pos[1],math.radians(myrobot.theta)], std=(20, 20, np.pi/4), N=N)
 	weights = np.ones(N)/N
 
+	#empty arrays for plotting
 	xs = []
-	#robot_pos = np.array(myrobot.pos)
 	robot_x = []
 	robot_y = []
 	mu_x = []
 	mu_y = []
 
+	draw = True
+	flag = True
 	while(flag):
 		if (draw):
 			screen.fill(BLACK)
@@ -145,12 +120,11 @@ def main():
 			
 			pygame.display.flip()
 		
-		# move the robot
-		## action is a tuple based on user input. (speed, turn). speed is either 1 or 0.
-		## turn is -1,0, or 1. -1 is counterclockwise. 1 is clockwise, 0 is no turn.
+		
 		pos_prev = myrobot.pos
 		theta_prev = myrobot.theta
 
+		# move the robot	
 		action = myrobot.updateState(action)
 
 		#print(action)

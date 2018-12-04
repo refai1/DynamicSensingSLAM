@@ -29,26 +29,57 @@ class Robot:
 
 
 	def updateState(self, action):
-		speed = action[0]
-		turn = action[1]
+		# speed = action[0]
+		# turn = action[1]
 		
+		# keys = pygame.key.get_pressed()
+		# if keys[pygame.K_LEFT]:
+		# 	turn = turn - 1
+		# 	if (turn < -1):
+		# 		turn = -1
+		# if keys[pygame.K_RIGHT]:
+		# 	turn = turn + 1
+		# 	if (turn > 1):
+		# 		turn = 1
+
+		# newtheta = self.theta + turn*math.radians(1)
+		# newx = self.pos[0] - speed*DT*math.sin(self.theta)
+		# newy = self.pos[1] + speed*DT*math.cos(self.theta)
+
+		# self.pos = (newx,newy)
+		# self.theta = newtheta
+		# return (speed,0)
+
+		l_spd = action[0]
+		r_spd = action[1]
+
 		keys = pygame.key.get_pressed()
-		if keys[pygame.K_LEFT]:
-			turn = turn - 1
-			if (turn < -1):
-				turn = -1
-		if keys[pygame.K_RIGHT]:
-			turn = turn + 1
-			if (turn > 1):
-				turn = 1
+		if keys[ord("w")]:
+			l_spd += 0.001
+		if keys[ord("s")]:
+			l_spd -= 0.001
+		if keys[ord("i")]:
+			r_spd += 0.001
+		if keys[ord("k")]:
+			r_spd -= 0.001
 
-		newtheta = self.theta + turn*math.radians(1)
-		newx = self.pos[0] - speed*DT*math.sin(self.theta)
-		newy = self.pos[1] + speed*DT*math.cos(self.theta)
+		#l_spd, r_spd = [0], spd[1]
+		theta = self.theta
+		v = 0.5 * DIAMETER*0.5 * (l_spd + r_spd)
+		l_dis = DT * l_spd
+		r_dis = DT * r_spd
+		#update = np.array((sy.cos(theta)*v*rr, sy.sin(theta)*v*rr, (r_dis-l_dis)/1.5))
+		update = np.array((math.sin(theta)*v*DT, -math.cos(theta)*v*DT, (l_dis-r_dis)/1.5))
+		#new_state = cur_state + update
+		
+		newx = self.pos[0] + update[0]
+		newy = self.pos[1] + update[1]
+		newtheta = self.theta + update[2]
 
-		self.pos = (newx,newy)
+		self.pos = (newx, newy)
 		self.theta = newtheta
-		return (speed,0)
+
+		return (l_spd, r_spd)
 
 
 
@@ -76,10 +107,7 @@ def main():
 	flag = True
 	# the user can press s to toggle speed between 0 and 1
 	# the user can press -> or <- to toggle turn clockwise or counter respectively.
-	speed = 0
-	turn = 0
-
-	action = (speed,turn)
+	action = (0,0)
 
 	screen.fill(BLACK)
 
@@ -123,7 +151,6 @@ def main():
 		pos_prev = myrobot.pos
 		theta_prev = myrobot.theta
 
-		action = (speed, turn)
 		action = myrobot.updateState(action)
 
 		#print(action)
@@ -155,8 +182,8 @@ def main():
 			if (event.type == pygame.KEYDOWN):
 				if (event.key == ord('q')):
 					flag = False
-				if (event.key == ord('s')):
-					speed = ~speed
+				#if (event.key == ord('s')):
+				#	speed = ~speed
 	robot_x = np.asarray(robot_x)
 	robot_y = np.asarray(robot_y)
 	mu_x = np.asarray(mu_x)

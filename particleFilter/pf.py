@@ -41,7 +41,7 @@ def predict(particles, u, std, dt=1.):
     # dist = (u[1] * dt) + (randn(N) * std[1])
     # particles[:, 0] += np.cos(particles[:, 2]) * dist
     # particles[:, 1] += np.sin(particles[:, 2]) * dist
-    
+
     particles[:, 0] += u[0] + (randn(N)*std[1])
     particles[:, 1] += u[1] + (randn(N)*std[1])
     particles[:, 2] += u[2] + (randn(N) * std[0])

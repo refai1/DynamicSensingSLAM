@@ -168,10 +168,6 @@ def main():
 	plt.show()
 
 
-
-		print("actual", robot_pos)
-		print("predicted", mu)
-
 		# plt.scatter(robot_pos[0], robot_pos[1], marker='+', color='k', s=180, lw=3)
 		# plt.scatter(mu[0], mu[1], marker='s', color='r')
 

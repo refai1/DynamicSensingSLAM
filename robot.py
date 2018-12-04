@@ -150,13 +150,7 @@ def main():
 		robot_x.append(robot_pos[0])
 		robot_y.append(robot_pos[1])
 
-		print("actual", robot_pos)
-		print("predicted", mu)
-
-		# plt.scatter(robot_pos[0], robot_pos[1], marker='+', color='k', s=180, lw=3)
-		# plt.scatter(mu[0], mu[1], marker='s', color='r')
-
-
+		
 		for event in pygame.event.get():
 			if (event.type == pygame.KEYDOWN):
 				if (event.key == ord('q')):
@@ -175,11 +169,5 @@ def main():
 	plt.plot(mu_x, mu_y, color='r')
 	plt.show()
 
-<<<<<<< HEAD
 
-		# plt.scatter(robot_pos[0], robot_pos[1], marker='+', color='k', s=180, lw=3)
-		# plt.scatter(mu[0], mu[1], marker='s', color='r')
-
-=======
->>>>>>> f941637567fdff6065dd66ca8fb611d0adf3471f
 main()

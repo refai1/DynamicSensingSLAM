@@ -45,6 +45,7 @@ class Robot:
 			r_spd -= 0.001
 
 		#l_spd, r_spd = [0], spd[1]
+
 		theta = self.theta
 		v = 0.5 * DIAMETER*0.5 * (l_spd + r_spd)
 		l_dis = DT * l_spd
@@ -53,8 +54,8 @@ class Robot:
 		update = np.array((math.sin(theta)*v*DT, -math.cos(theta)*v*DT, (l_dis-r_dis)/1.5))
 		#new_state = cur_state + update
 		
-		newx = self.pos[0] + update[0]
-		newy = self.pos[1] + update[1]
+		newx = self.pos[0] + update[0]# + (0.2*(np.random.random_sample()-0.5)*update[0])
+		newy = self.pos[1] + update[1] #+ (0.2*(np.random.random_sample()-0.5)*update[1])
 		newtheta = self.theta + update[2]
 
 		self.pos = (newx, newy)
@@ -100,7 +101,9 @@ def main():
 	robot_y = []
 	mu_x = []
 	mu_y = []
+	err = []
 
+	iteration = 0
 	draw = True
 	flag = True
 	while(flag):
@@ -124,6 +127,20 @@ def main():
 		pos_prev = myrobot.pos
 		theta_prev = myrobot.theta
 
+		if(iteration < 50):
+			action = (0,0)
+		elif(iteration < 400):
+			action = (0.02, 0.02)
+		elif(iteration < 800):
+			action = (0.01, 0.02)
+		elif(iteration < 1200):
+			action = (0.02, 0.02)
+		elif(iteration < 1600):
+			action = (0.02, 0.01)
+		elif(iteration < 1900):
+			action = (0.02, 0.02)
+		else:
+			action = (0,0)
 		# move the robot	
 		action = myrobot.updateState(action)
 
@@ -134,7 +151,7 @@ def main():
 		zs = (norm(landmarks - robot_pos, axis=1) + randn(NL)*1.1)
 
 		# predict based on actions
-		PF.predict(particles, (myrobot.pos[0] - pos_prev[0], myrobot.pos[1] - pos_prev[1], math.radians(myrobot.theta - theta_prev)), std=(0.25, 1), dt=DT)
+		PF.predict(particles, action, std=(0.02, 0.1), dt=DT)
 
 		PF.update(particles, weights, z=zs, R=1.1, landmarks=landmarks)
 
@@ -151,7 +168,9 @@ def main():
 		robot_x.append(robot_pos[0])
 		robot_y.append(robot_pos[1])
 
-		
+		err.append(math.sqrt((robot_pos[0] - mu[0])**2 + (robot_pos[1] - mu[1])**2))
+
+		iteration += 1
 		for event in pygame.event.get():
 			if (event.type == pygame.KEYDOWN):
 				if (event.key == ord('q')):
@@ -168,6 +187,11 @@ def main():
 	plt.figure()
 	plt.plot(robot_x, robot_y, color='k')
 	plt.plot(mu_x, mu_y, color='r')
+
+	plt.figure(2)
+	plt.plot(err, color='k')
+	print(sum(err)/iteration)
+	
 	plt.show()
 
 

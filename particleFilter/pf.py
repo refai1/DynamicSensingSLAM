@@ -8,7 +8,7 @@ from filterpy.monte_carlo import systematic_resample
 from numpy.linalg import norm
 from numpy.random import randn
 import scipy.stats
-
+import math
 
 
 def create_uniform_particles(x_range, y_range, hdg_range, N):
@@ -27,13 +27,18 @@ def create_gaussian_particles(mean, std, N):
     particles[:, 2] %= 2 * np.pi
     return particles
 
-
 def predict(particles, u, std, dt=1.):
     N = len(particles)
+    
+    v = 0.5 * 80* 0.5 * (u[0] + u[1])
+    l_dis = dt * u[0]
+    r_dis = dt * u[1]
+	#update = np.array((sy.cos(theta)*v*rr, sy.sin(theta)*v*rr, (r_dis-l_dis)/1.5))
+    update = np.array((v*dt, v*dt, (l_dis-r_dis)/1.5))
 
-    particles[:, 0] += u[0] + (randn(N)*std[1])
-    particles[:, 1] += u[1] + (randn(N)*std[1])
-    particles[:, 2] += u[2] + (randn(N) * std[0])
+    particles[:, 0] += update[0]*-np.sin(particles[:,2]) + (randn(N)*std[1])
+    particles[:, 1] += update[1]*np.cos(particles[:,2]) + (randn(N)*std[1])
+    particles[:, 2] += update[2] + (randn(N) * std[0])
     particles[:, 2] %= 2 * np.pi
 
 
